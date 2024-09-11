@@ -22,3 +22,57 @@ def extract_PDF_raw(filename):
     #split series of PDF converted to strings to list of objects
     pg1_objects = (pg1).split('S')
     return pg1_objects
+
+def extract_leads_numeric(range_list,pdf_object):
+    #unpack the dict with indices
+    start_idx = range_list['start_idx']
+    end_idx = range_list['end_idx']
+    start_idx_long = range_list['start_idx_long']
+    end_idx_long = range_list['end_idx_long']
+    cal_idx = range_list['cal_idx']
+
+    lead_objects = []
+    #extract short-time lead objects (string of points)
+    for x in range(start_idx, end_idx+1):
+        lead_objects.append(pdf_object[x])
+
+    #extract long-time lead objects (string of points indices)
+    for x in range(start_idx_long, end_idx_long+1):
+        lead_objects.append(pdf_object[x])
+
+    #extract calibration marker
+    lead_objects.append(pdf_object[cal_idx])
+
+    #remove m(mark?) and l (line?) markers in PDF in each lead object and split newlines
+    for i,obj in enumerate(lead_objects):
+        lead_objects[i] = obj.replace(' l', '').replace(' m', '').split('\n')
+
+    #select only indices with numeric strings (sample points)
+    for i, obj in enumerate(lead_objects):
+        #set advance index flag to 0 by default
+        adv_idx = 0 
+        for j in obj:
+            if 'BT' in j:
+                #advance starting idx by 1 flag
+                adv_idx = 1
+        #extract the indices according to the flag advancing by 1 if 'BT' present
+        if adv_idx == 1:
+            lead_objects[i] = lead_objects[i][2:-1]
+        else:
+            lead_objects[i] = lead_objects[i][1:-1]
+
+    lead_numeric = []    
+    #convert string trace sample coordinates into int x,y coordinates
+    for x, trace in enumerate(lead_objects):
+        tmp_xy_col = []
+        for r in trace:
+            #get coordinates as string
+            tmp_xy = r.split(' ')
+            #cast string x,y coordinates as int
+            tmp_xy = [int(i) for i in tmp_xy]
+            #append to trace array
+            tmp_xy_col.append(tmp_xy) 
+        #covert int coordinates to numpy array format
+        lead_numeric.append(np.array(tmp_xy_col))
+
+    return lead_numeric
