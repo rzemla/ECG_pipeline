@@ -1,4 +1,24 @@
 '''
+for extract_leads_numeric, indices correspond to the following leads:
+#411 - calibration marker
+#412 - I short
+#413 - II short
+#414 - III short
+#415 - aVR short
+#416 - aVL short
+#417 - aVF short
+#418 - V1 short
+#419 - V2 short
+#420 - V3 short
+#421 - V4 short
+#422 - V5 short
+#423 - V6 short
+#424 - calibration marker
+#425 - calibration marker
+#426 - calibration marker
+#427 - V1 long
+#428 - II long
+#429 - V5 long
 
 '''
 from utils.extract_utils.extract_utils import rotate_origin_only, move_along_the_axis, scale_values_based_on_eich_peak, \
