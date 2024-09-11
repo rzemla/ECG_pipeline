@@ -96,3 +96,23 @@ def extract_leads_numeric(range_list,pdf_object):
         lead_numeric.append(np.array(tmp_xy_col))
 
     return lead_numeric
+
+
+def move_trace_to_origin(lead_list,index = 0):
+    #input list of x,y samples for given EKG lead
+    #shifts all the traces to common origin and shift y coordinates against first sample value
+    tmp = 0
+    for (x, y), i in zip(lead_list, range(len(lead_list))):
+        if x < index:
+            tmp = i
+
+    x0, y0 = lead_list[tmp]
+    tmp = [(x, y - y0) for x, y in lead_list]
+
+    delta = index - tmp[0][0]
+
+    new_lead_list = []
+    for i in tmp:
+        new_lead_list.append((i[0] + delta, i[1]))
+
+    return new_lead_list
