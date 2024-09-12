@@ -181,3 +181,48 @@ def find_value1_value2(liste, value):
     value2 = liste[index]
 
     return [value1, value2], index
+
+def perform_shape_switch(input):
+    #shift list representation into numpy array with feed to dataframe
+    #columns: leads
+    #rows: timepoints
+
+    input = np.asarray(input)
+    length = len(input)
+    width = len(input[0])
+
+    output = np.zeros((width, length))
+
+    for row in range(width):
+        for item in range(length):
+            output[row][item] = input[item][row]
+
+    return output
+
+def calc_stddev(df, window_size=124):
+    """
+        calculates the average using the standard deviation
+        Note: the procedure is only executed on the first lead(?)
+        Code below calculate interval where std is the smallest in each lead, finds the one with smallest std for each lead, and returns the mean of that interval for each lead 
+
+    :param df: DataFrame which is scanned
+    :param window_size: size of the sliding window
+    :return: average
+    """
+    min_dev_sum = np.Inf
+    avg = []
+    for i in range(0, len(df) - window_size):
+        df_tmp = df.loc[i:i + window_size]
+
+        if sum(df_tmp.std()) < min_dev_sum:
+            min_dev_sum = sum(df_tmp.std())
+            avg = df_tmp.mean()
+    return avg
+
+def adjust_leads_baseline(df_leads):
+    stddev_tmp = calc_stddev(df_leads)
+
+    for column in df_leads.columns:
+        df_leads[column] = df_leads[column] - stddev_tmp[column]
+
+    return df_leads
