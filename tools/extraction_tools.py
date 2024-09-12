@@ -126,3 +126,58 @@ def scale_values_using_cal_mark(lead_list, gamma=0.5):
         new_lead_list.append([xy_pair[0], new_y_value])
 
     return new_lead_list
+
+
+def create_measurement_points(lead_list, number_of_points):
+    """
+    creates measuring points at equidistant intervals from each other
+    :param lead_list: list with lead
+    :param number_of_points: number of measuring points to be created
+    :return: list with measuring points
+    """
+    measurement_points = []
+    max_element = lead_list[-1][0]
+    distance = max_element / number_of_points
+
+    x_values = [x[0] for x in lead_list]
+    y_values = [y[1] for y in lead_list]
+
+    for i in range(0, number_of_points):
+        measurement_points.append(get_y_value(i * distance, x_values, y_values))
+
+    measurement_points = [int(y) for y in measurement_points]
+    return measurement_points
+
+
+
+def get_y_value(x, list_x, list_y):
+    """
+    returns the Y value of a transferred X value based on the transferred list of values.
+    :param x: x Value
+    :param list_x: list of X-values
+    :param list_y: list of Y-values
+    :return: y value
+    """
+    x_value, index = find_value1_value2(list_x, x)
+    y_value = [list_y[index - 1], list_y[index]]
+
+    m = (y_value[0] - y_value[1]) / (x_value[0] - x_value[1])
+    b = (x_value[0] * y_value[1] - x_value[1] * y_value[0]) / (x_value[0] - x_value[1])
+    y = m * x + b
+    return y
+
+
+def find_value1_value2(liste, value):
+    """
+    finds the next smaller and larger value in a list for a passed value.
+    :param liste: list to be searched
+    :param value: value
+    :return: lower value, upper value and index
+    """
+    tmp_array = np.array(liste)
+    index = np.where(tmp_array > value)[0][0]
+
+    value1 = 0 if index == 0 else liste[index - 1]
+    value2 = liste[index]
+
+    return [value1, value2], index
