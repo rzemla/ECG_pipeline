@@ -116,3 +116,13 @@ def move_trace_to_origin(lead_list,index = 0):
         new_lead_list.append((i[0] + delta, i[1]))
 
     return new_lead_list
+
+
+def scale_values_using_cal_mark(lead_list, gamma=0.5):
+    #apply scaling based on calibration mark (not necessary with current PDF output from EKGs)
+    new_lead_list = []
+    for xy_pair in lead_list:
+        new_y_value = xy_pair[1] * gamma
+        new_lead_list.append([xy_pair[0], new_y_value])
+
+    return new_lead_list
