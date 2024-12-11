@@ -118,6 +118,8 @@ def extract_traces(filename):
     # Adjust baseline position of each lead
     df_leads_short = adjust_leads_baseline(df_leads_short)
 
+    # Extract trace ID for given set of traces
+
     return df_leads_short
 
 
